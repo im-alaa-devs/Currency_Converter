@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exchange – Currency Converter</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f2f5f8;--surface:#fff;--sunk:#f3f6f9;--line:#e1e7ee;--text:#0f1b2d;--muted:#5d6b7e;
+  --accent:#0b7a6b;--accent-h:#096658;--accent-soft:#dff3ef;--on-accent:#fff;--shadow:0 24px 48px -24px rgba(15,27,45,.22);
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0a1118;--surface:#111b25;--sunk:#0d151d;--line:#1f2d3b;--text:#e8eef5;--muted:#8a9aad;
+  --accent:#34d3b2;--accent-h:#5be0c4;--accent-soft:#12302d;--on-accent:#06251f;--shadow:0 24px 48px -24px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{
+  --bg:#0a1118;--surface:#111b25;--sunk:#0d151d;--line:#1f2d3b;--text:#e8eef5;--muted:#8a9aad;
+  --accent:#34d3b2;--accent-h:#5be0c4;--accent-soft:#12302d;--on-accent:#06251f;--shadow:0 24px 48px -24px rgba(0,0,0,.7)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);padding:20px 16px 40px;transition:background .35s,color .35s}
+.wrap{max-width:540px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:19px}
+.mark{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;transition:background .35s}
+.mark svg,.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ctrl{display:flex;gap:8px}
+.btn{height:38px;min-width:38px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,border-color .2s,transform .1s}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:scale(.96)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sun{display:none}
+[data-theme="dark"] .sun{display:block}[data-theme="dark"] .moon{display:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);transition:background .35s,border-color .35s;animation:in .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+label,.lbl{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px}
+.amount{display:flex;align-items:center;background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:0 16px;transition:border-color .2s,box-shadow .2s,background .35s}
+.amount:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.amount input{flex:1;min-width:0;border:0;background:transparent;color:var(--text);font:inherit;font-size:32px;font-weight:500;padding:14px 0;outline:0;font-variant-numeric:tabular-nums;text-align:start}
+.amount span{font-weight:600;color:var(--muted);font-size:15px}
+.chips{display:flex;gap:8px;margin:12px 0 20px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;cursor:pointer;transition:.2s}
+.chip:hover{color:var(--accent);border-color:var(--accent)}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+select{width:100%;height:50px;border:1px solid var(--line);border-radius:12px;background-color:var(--sunk);color:var(--text);font:inherit;font-size:15px;font-weight:500;padding-inline:14px 36px;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s,background-color .35s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238a9aad' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+[dir="rtl"] select{background-position:left 14px center}
+select:hover{border-color:var(--accent)}
+.swap{width:44px;height:44px;margin-bottom:3px;border-radius:50%;border:1px solid var(--line);background:var(--accent-soft);color:var(--accent);cursor:pointer;display:grid;place-items:center;transition:transform .45s cubic-bezier(.3,1.4,.5,1),background .2s}
+.swap:hover{background:var(--accent);color:var(--on-accent)}
+.swap svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.swap.flip{transform:rotate(180deg)}
+.result{margin-top:22px;padding:20px;border-radius:16px;background:var(--accent-soft);transition:background .35s}
+.result .lbl{margin-bottom:4px;color:var(--accent)}
+.out{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.out b{font-size:40px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
+.out span{font-size:18px;font-weight:600;color:var(--accent)}
+.rates{margin-top:10px;font-size:14px;color:var(--muted);display:grid;gap:2px;font-variant-numeric:tabular-nums}
+.more{margin-top:24px}
+.row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--text);font:inherit;text-align:start;cursor:pointer;transition:background .2s}
+.row:hover{background:var(--sunk)}
+.row .n{display:flex;flex-direction:column;font-size:13px;color:var(--muted)}
+.row .n strong{font-size:15px;color:var(--text);font-weight:600}
+.row .v{font-size:16px;font-weight:500;font-variant-numeric:tabular-nums}
+.note{margin:18px 4px 0;font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:460px){
+  .pair{grid-template-columns:1fr;gap:8px}.swap{margin:0 auto;transform:rotate(90deg)}.swap.flip{transform:rotate(270deg)}
+  .out b{font-size:32px}.amount input{font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4m4 4H7"/></svg></div>
+      <span id="brand"></span>
+    </div>
+    <div class="ctrl">
+      <button class="btn" id="langBtn" type="button"></button>
+      <button class="btn" id="themeBtn" type="button">
+        <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="card">
+    <label for="amt" id="tAmount"></label>
+    <div class="amount"><input id="amt" inputmode="decimal" autocomplete="off" value="100"><span id="amtCur"></span></div>
+    <div class="chips" id="chips"></div>
+
+    <div class="pair">
+      <div><label for="from" id="tFrom"></label><select id="from"></select></div>
+      <button class="swap" id="swap" type="button"><svg viewBox="0 0 24 24"><path d="M7 4v16M7 4 3 8m4-4 4 4M17 20V4m0 16-4-4m4 4 4-4"/></svg></button>
+      <div><label for="to" id="tTo"></label><select id="to"></select></div>
+    </div>
+
+    <section class="result" aria-live="polite">
+      <div class="lbl" id="tResult"></div>
+      <div class="out"><b id="out">0</b><span id="outCur"></span></div>
+      <div class="rates"><div id="r1"></div><div id="r2"></div></div>
+    </section>
+
+    <section class="more">
+      <div class="lbl" id="tMore"></div>
+      <div id="list"></div>
+    </section>
+  </main>
+  <p class="note" id="note"></p>
+</div>
+
+<script>
+(function(){
+  /* Indicative sample rates: units of currency per 1 USD. Edit these to update. */
+  var R={USD:1,EUR:.92,GBP:.78,EGP:48.5,SAR:3.75,AED:3.6725,KWD:.307,QAR:3.64,JPY:150,CNY:7.2,INR:84,TRY:41,CAD:1.37,AUD:1.5,CHF:.88,MAD:9.9};
+  var N={USD:['US Dollar','الدولار الأمريكي'],EUR:['Euro','اليورو'],GBP:['British Pound','الجنيه الإسترليني'],EGP:['Egyptian Pound','الجنيه المصري'],SAR:['Saudi Riyal','الريال السعودي'],AED:['UAE Dirham','الدرهم الإماراتي'],KWD:['Kuwaiti Dinar','الدينار الكويتي'],QAR:['Qatari Riyal','الريال القطري'],JPY:['Japanese Yen','الين الياباني'],CNY:['Chinese Yuan','اليوان الصيني'],INR:['Indian Rupee','الروبية الهندية'],TRY:['Turkish Lira','الليرة التركية'],CAD:['Canadian Dollar','الدولار الكندي'],AUD:['Australian Dollar','الدولار الأسترالي'],CHF:['Swiss Franc','الفرنك السويسري'],MAD:['Moroccan Dirham','الدرهم المغربي']};
+  var DEC={JPY:0,KWD:3};
+  var T={
+    en:{brand:'Exchange',amount:'Amount',from:'From',to:'To',result:'Converted amount',more:'Same amount in other currencies',note:'Indicative rates for reference only. Not live market data.',swap:'Swap currencies',theme:'Switch theme',lang:'العربية',title:'Exchange – Currency Converter'},
+    ar:{brand:'محوّل العملات',amount:'المبلغ',from:'من',to:'إلى',result:'المبلغ بعد التحويل',more:'المبلغ نفسه بعملات أخرى',note:'أسعار استرشادية للاطلاع فقط وليست أسعار السوق المباشرة.',swap:'تبديل العملتين',theme:'تغيير المظهر',lang:'English',title:'محوّل العملات'}
+  };
+  var $=function(i){return document.getElementById(i)};
+  var root=document.documentElement;
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function save(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+  var s={lang:load('fx-lang')||((navigator.language||'').indexOf('ar')===0?'ar':'en'),from:'USD',to:'EGP'};
+  var shown=0, raf=0;
+  var loc=function(){return s.lang==='ar'?'ar-EG':'en-US';};
+
+  function parse(v){
+    v=String(v).replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632;}).replace(/٫/g,'.').replace(/[٬,\s]/g,'');
+    var n=parseFloat(v); return isNaN(n)||n<0?0:n;
+  }
+  function fmt(n,c,max){
+    var d=DEC[c]!==undefined?DEC[c]:2;
+    return new Intl.NumberFormat(loc(),{minimumFractionDigits:max?0:d,maximumFractionDigits:max||d}).format(n);
+  }
+  function rate(f,t){return R[t]/R[f];}
+  function rateFmt(n){return new Intl.NumberFormat(loc(),{maximumFractionDigits:n>=100?2:n>=1?4:6}).format(n);}
+
+  function buildSelects(){
+    ['from','to'].forEach(function(id){
+      var el=$(id), cur=s[id]; el.innerHTML='';
+      Object.keys(R).forEach(function(c){
+        var o=document.createElement('option'); o.value=c; o.textContent=c+' — '+N[c][s.lang==='ar'?1:0]; el.appendChild(o);
+      });
+      el.value=cur;
+    });
+  }
+  function buildChips(){
+    var box=$('chips'); box.innerHTML='';
+    [1,10,100,1000].forEach(function(v){
+      var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=new Intl.NumberFormat(loc()).format(v);
+      b.onclick=function(){$('amt').value=String(v); update();}; box.appendChild(b);
+    });
+  }
+  function applyLang(){
+    var t=T[s.lang];
+    root.lang=s.lang; root.dir=s.lang==='ar'?'rtl':'ltr'; document.title=t.title;
+    $('brand').textContent=t.brand; $('tAmount').textContent=t.amount; $('tFrom').textContent=t.from; $('tTo').textContent=t.to;
+    $('tResult').textContent=t.result; $('tMore').textContent=t.more; $('note').textContent=t.note;
+    $('langBtn').textContent=t.lang; $('langBtn').setAttribute('aria-label',s.lang==='ar'?'Switch to English':'التبديل إلى العربية');
+    $('swap').setAttribute('aria-label',t.swap); $('themeBtn').setAttribute('aria-label',t.theme);
+    buildSelects(); buildChips(); update(true);
+  }
+
+  function animate(v,c){
+    cancelAnimationFrame(raf);
+    var from=shown, t0=performance.now(), dur=reduce?0:380;
+    function step(now){
+      var p=dur?Math.min(1,(now-t0)/dur):1, e=1-Math.pow(1-p,3), cur=from+(v-from)*e;
+      $('out').textContent=fmt(cur,c); shown=cur;
+      var l=$('out').textContent.length; $('out').style.fontSize=l>18?'24px':l>14?'30px':'';
+      if(p<1) raf=requestAnimationFrame(step); else shown=v;
+    }
+    raf=requestAnimationFrame(step);
+  }
+  function update(instant){
+    var a=parse($('amt').value), f=s.from, t=s.to, v=a*rate(f,t);
+    $('amtCur').textContent=f; $('outCur').textContent=t;
+    if(instant){shown=v;}
+    animate(v,t);
+    $('r1').textContent='1 '+f+' = '+rateFmt(rate(f,t))+' '+t;
+    $('r2').textContent='1 '+t+' = '+rateFmt(rate(t,f))+' '+f;
+    var list=$('list'); list.innerHTML='';
+    ['USD','EUR','GBP','SAR','AED','EGP','KWD','QAR'].filter(function(c){return c!==f&&c!==t;}).slice(0,4).forEach(function(c){
+      var b=document.createElement('button'); b.type='button'; b.className='row';
+      var n=document.createElement('span'); n.className='n';
+      var st=document.createElement('strong'); st.textContent=c; var sm=document.createElement('span'); sm.textContent=N[c][s.lang==='ar'?1:0];
+      n.appendChild(st); n.appendChild(sm);
+      var val=document.createElement('span'); val.className='v'; val.textContent=fmt(a*rate(f,c),c);
+      b.appendChild(n); b.appendChild(val);
+      b.onclick=function(){s.to=c; $('to').value=c; update();};
+      list.appendChild(b);
+    });
+  }
+
+  $('amt').addEventListener('input',function(){
+    var v=this.value.replace(/[^0-9٠-٩.,٫]/g,''); if(v!==this.value) this.value=v; update();
+  });
+  $('from').addEventListener('change',function(){s.from=this.value; update();});
+  $('to').addEventListener('change',function(){s.to=this.value; update();});
+  $('swap').addEventListener('click',function(){
+    var x=s.from; s.from=s.to; s.to=x; $('from').value=s.from; $('to').value=s.to;
+    this.classList.toggle('flip'); update();
+  });
+  $('langBtn').addEventListener('click',function(){s.lang=s.lang==='ar'?'en':'ar'; save('fx-lang',s.lang); applyLang();});
+  var theme=load('fx-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  root.setAttribute('data-theme',theme);
+  $('themeBtn').addEventListener('click',function(){
+    theme=root.getAttribute('data-theme')==='dark'?'light':'dark'; root.setAttribute('data-theme',theme); save('fx-theme',theme);
+  });
+
+  applyLang();
+})();
+</script>
+</body>
+</html>
